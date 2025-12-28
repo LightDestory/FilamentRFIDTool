@@ -5,30 +5,18 @@
 
 <div align="center">
 
-  <a href="https://github.com/LightDestory/RepositoryTemplate">
-    <img src="https://raw.githubusercontent.com/LightDestory/RepositoryTemplate/master/.github/assets/images/presentation_image.png" alt="Preview" width="90%">
+  <a href="https://github.com/LightDestory/FilamentRFIDTool">
+    <img src="https://raw.githubusercontent.com/LightDestory/FilamentRFIDTool/master/.github/assets/images/presentation_image.png" alt="Preview" width="90%">
   </a>
 
-  <h2 align="center">PROJECT_NAME</h2>
+  <h2 align="center">FilamentRFIDTool</h2>
   
   <p align="center">
-      PROJECT_SHORT_DESCRIPTION
+      An Android application to manage Filament RFIDs.
   </p>
   
   <br />
   <br />
-
-  <!-- MultiLang Selector - DELETE ME IF NOT NEEDED -->
-
-  <section>
-    This README is available in the following languages:
-    <br />
-    <a href="README.md">English</a>
-    ·
-    Italian
-    <br />
-    <br />
-  </section>
 
 </div>
 
@@ -60,7 +48,11 @@
 
 ## :book: About The Project
 
-PROJECT_LONG_DESCRIPTION
+FilamentRFIDTool is an Android application designed to read and manage RFID tags on 3D printing filament spools. It features a modern UI and easy-to-use interaction, allowing users to read, write, and store RFID data.
+
+Currently, there are three main types of filament tags in the wild: **Bambu Lab**, **Creality**, and **OpenTag**. This application aims to support all of them.
+
+For more technical details on the tags, refer to the [Bambu Research Group RFID Tag Guide](https://github.com/Bambu-Research-Group/RFID-Tag-Guide#tag-documentation).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -68,31 +60,47 @@ PROJECT_LONG_DESCRIPTION
 
 ## :gear: Getting Started
 
-START_INFO
+### For Users
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+If you just want to use the application, you can download the latest APK from the [Releases](https://github.com/LightDestory/FilamentRFIDTool/releases) section.
 
-### Prerequisites
+### For Developers
 
-PREQ_INFO
+To get a local copy up and running for development, follow these simple steps.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+#### Prerequisites
 
-### Installation
+* Android Studio Ladybug or newer
+* JDK 17
+* Android Device with NFC support
 
-INSTALL_INFO
+#### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/LightDestory/FilamentRFIDTool.git
+   ```
+2. Open the project in Android Studio
+3. Sync Gradle project
+4. Run on your device
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Usage
 
-USAGE_INFO
+The application is designed with simplicity in mind, featuring three main views:
+
+*   **Scanner**: Quickly scan an RFID tag on the fly to check its data.
+*   **Vault**: Store and manage your collection of RFID data.
+*   **About**: View application information.
+
+Interaction is easy—simply use the scan button to read an RFID tag.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Notes
 
-NOTES_INFO
+This project is currently in development.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -115,7 +123,7 @@ If you find value in my work, please consider making a donation to help me creat
 Your donation will go a long way in helping me continue to create free software that can benefit people around the world.
 
 <p align="center">
-<a href='https://ko-fi.com/M4M6KC01A' target='_blank'><img src='https://raw.githubusercontent.com/LightDestory/RepositoryTemplate/master/.github/assets/images/support.png' alt='Buy Me a Hot Chocolate at ko-fi.com' width="45%" /></a>
+<a href='https://ko-fi.com/M4M6KC01A' target='_blank'><img src='https://raw.githubusercontent.com/LightDestory/FilamentRFIDTool/master/.github/assets/images/support.png' alt='Buy Me a Hot Chocolate at ko-fi.com' width="45%" /></a>
 </p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -132,6 +140,11 @@ The content of this repository is distributed under the GNU GPL-3.0 License. See
 
 ## :hammer_and_wrench: Built With
 
-- [Capybara](https://it.wikipedia.org/wiki/Hydrochoerus_hydrochaeris)
+- [Kotlin](https://kotlinlang.org/)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
+- [Material3 Compose](https://developer.android.com/jetpack/compose/designsystems/material3)
+- [AndroidX Navigation](https://developer.android.com/guide/navigation)
+- [Bouncy Castle Provider](https://www.bouncycastle.org/)
+- [Android Studio](https://developer.android.com/studio)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
