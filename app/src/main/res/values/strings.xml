@@ -1,0 +1,61 @@
+<resources>
+    <!-- App -->
+    <string name="app_name" translatable="false">Filament RFID Tool</string>
+    <string name="not_yet_implemented">Not yet implemented</string>
+
+    <!-- Navigation -->
+    <string name="navigation_scanner">Scanner</string>
+    <string name="navigation_vault">Vault</string>
+    <string name="navigation_about">About</string>
+
+    <!-- About: project and profile -->
+    <string name="about_version_label">Version</string>
+    <string name="about_developer_label">Developer</string>
+    <string name="about_developer_name" translatable="false">LightDestory</string>
+
+    <!-- About: links -->
+    <string name="about_github_label" translatable="false">GitHub</string>
+    <string name="about_kofi_label" translatable="false">Ko-fi</string>
+    <string name="about_github_url" translatable="false">https://github.com/LightDestory/FilamentRFIDTool</string>
+    <string name="about_kofi_url" translatable="false">https://ko-fi.com/lightdestory</string>
+    <string name="about_github_description">Open-source project; contributions are welcome.</string>
+    <string name="about_kofi_description">Support development and maintenance.</string>
+
+    <!-- About: licensing -->
+    <string name="about_licenses_label">Open source Licenses</string>
+    <string name="about_licenses_description">Read the full text of the open source licenses.</string>
+    <string name="about_licenses_close">Close</string>
+    <string name="about_license_label">License</string>
+    <string name="about_license_format">License: %1$s</string>
+    <string name="about_license_open_project">Project site</string>
+    <string name="about_license_view_license">View license</string>
+
+    <!-- About: RFID reference -->
+    <string name="about_rfid_label">RFID implementation</string>
+    <string name="about_rfid_description">Learn more about the RFID tag implementation.</string>
+    <string name="about_rfid_url" translatable="false">https://github.com/Bambu-Research-Group/RFID-Tag-Guide</string>
+
+    <!-- Scanner -->
+    <string name="scanner_scan_button">Scan</string>
+    <string name="scanner_waiting_message">Hold the filament spool near the phone.</string>
+    <string name="scanner_last_uid">Last UID: %1$s</string>
+    <string name="scanner_abort">Abort</string>
+    <string name="scanner_filament_details">Filament details</string>
+    <string name="scanner_filament_manufacturer">Manufacturer</string>
+    <string name="scanner_filament_material">Material</string>>
+    <string name="scanner_filament_diameter">Diameter</string>
+    <string name="scanner_filament_weight">Weight</string>
+    <string name="scanner_filament_color_name">Color</string>
+    <string name="scanner_filament_color_hex">Color HEX</string>
+    <string name="scanner_filament_uid">UID</string>
+    <string name="scanner_filament_color">Color Swatch</string>
+    <string name="scanner_filament_production_date">Production Date</string>
+    <string name="non_mifare_tag_detected">Non-Mifare tag detected</string>
+
+    <!-- NFC status prompts -->
+    <string name="nfc_disabled_title">NFC is off</string>
+    <string name="nfc_disabled_message">This app requires NFC to work. Turn it on in system settings.</string>
+    <string name="nfc_enable_action">Open NFC settings</string>
+    <string name="invalid_mifareclassic_tag">Invalid MifareClassic tag</string>
+
+</resources>
