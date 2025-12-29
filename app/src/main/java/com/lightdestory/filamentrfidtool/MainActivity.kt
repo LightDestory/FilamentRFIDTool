@@ -73,7 +73,8 @@ private enum class BottomDestination(val route: String, val labelRes: Int) {
 private fun MainScaffold(
     latestNfcIntent: androidx.compose.runtime.State<Intent?> = remember {
         mutableStateOf(null)
-    }
+    },
+    showNfcPrompt: Boolean = true
 ) {
     val context = LocalContext.current
     val navController = rememberNavController()
@@ -129,7 +130,9 @@ private fun MainScaffold(
             }
         }
     ) { innerPadding ->
-        NfcPrompt(onOpenSettings = { openNfcSettings(context) })
+        if (showNfcPrompt) {
+            NfcPrompt(onOpenSettings = { openNfcSettings(context) })
+        }
         NavHost(
             navController = navController,
             startDestination = BottomDestination.Scanner.route,
@@ -143,7 +146,7 @@ private fun MainScaffold(
 }
 
 @Composable
-private fun NfcPrompt(onOpenSettings: () -> Unit) {
+fun NfcPrompt(onOpenSettings: () -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -180,5 +183,5 @@ private fun NfcPrompt(onOpenSettings: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun MainScaffoldPreview() {
-    FilamentRFIDToolTheme { MainScaffold() }
+    FilamentRFIDToolTheme { MainScaffold(showNfcPrompt = false) }
 }
