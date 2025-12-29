@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.lightdestory.filamentrfidtool.R
 import com.lightdestory.filamentrfidtool.models.FilamentSpool
-import com.lightdestory.filamentrfidtool.ui.theme.White
 
 @Composable
 fun FilamentDetailsCard(
@@ -37,11 +36,11 @@ fun FilamentDetailsCard(
     val parsedColors = Array<Color?>(2) { null }
     if (spoolData.colorHex.contains('-')) {
         parsedColors[0] =
-            runCatching { Color(spoolData.colorHex.split('-')[0].toColorInt()) }.getOrDefault(White)
+            runCatching { Color(spoolData.colorHex.split('-')[0].toColorInt()) }.getOrDefault(Color.White)
         parsedColors[1] =
             runCatching { Color(spoolData.colorHex.split('-')[1].toColorInt()) }.getOrNull()
     } else {
-        parsedColors[0] = runCatching { Color(spoolData.colorHex.toColorInt()) }.getOrDefault(White)
+        parsedColors[0] = runCatching { Color(spoolData.colorHex.toColorInt()) }.getOrDefault(Color.White)
     }
     Card(
         modifier = modifier.fillMaxWidth(),
