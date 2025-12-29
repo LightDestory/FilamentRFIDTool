@@ -62,7 +62,11 @@ fun ScannerScreen(latestNfcIntent: State<Intent?>) {
         if (nfcAdapter == null || activity == null) return@DisposableEffect onDispose { }
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_RESUME -> if (currentIsScanning) enableDispatch(nfcAdapter, activity)
+                Lifecycle.Event.ON_RESUME -> if (currentIsScanning) enableDispatch(
+                    nfcAdapter,
+                    activity
+                )
+
                 Lifecycle.Event.ON_PAUSE -> disableDispatch(nfcAdapter, activity)
                 else -> Unit
             }
@@ -120,7 +124,10 @@ fun ScannerScreen(latestNfcIntent: State<Intent?>) {
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(R.string.scanner_scan_button), style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = stringResource(R.string.scanner_scan_button),
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
         }
     }
@@ -137,9 +144,15 @@ fun ScannerScreen(latestNfcIntent: State<Intent?>) {
 }
 
 private fun enableDispatch(adapter: NfcAdapter, activity: Activity) {
-    val intent = Intent(activity.applicationContext, activity.javaClass).apply { addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP) }
+    val intent = Intent(
+        activity.applicationContext,
+        activity.javaClass
+    ).apply { addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP) }
     val pendingIntent = android.app.PendingIntent.getActivity(
-        activity, 0, intent, android.app.PendingIntent.FLAG_MUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+        activity,
+        0,
+        intent,
+        android.app.PendingIntent.FLAG_MUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
     )
     val techList = arrayOf(arrayOf(MifareClassic::class.java.name))
     adapter.enableForegroundDispatch(activity, pendingIntent, null, techList)
@@ -158,8 +171,10 @@ private fun handleTagIntent(intent: Intent, context: android.content.Context, on
     val techList = tag.techList
     val isMifareClassic = techList.contains(MifareClassic::class.java.name)
     if (!isMifareClassic) {
-        Toast.makeText(context,
-            context.getString(R.string.non_mifare_tag_detected), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            context.getString(R.string.non_mifare_tag_detected), Toast.LENGTH_SHORT
+        ).show()
         Log.w("ScannerScreen", "Non-Mifare tag detected: ${tag.techList?.joinToString()}")
         onDone()
         return
@@ -167,8 +182,10 @@ private fun handleTagIntent(intent: Intent, context: android.content.Context, on
     val mifare = MifareClassic.get(tag)
     if (mifare == null) {
         Log.w("ScannerScreen", "MifareClassic tech unavailable for detected tag")
-        Toast.makeText(context,
-            context.getString(R.string.invalid_mifareclassic_tag), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            context.getString(R.string.invalid_mifareclassic_tag), Toast.LENGTH_SHORT
+        ).show()
         onDone()
         return
     }
@@ -185,11 +202,19 @@ private fun handleTagIntent(intent: Intent, context: android.content.Context, on
                 Log.w("ScannerScreen", "Authentication failed for sector $sector with derived keys")
                 continue
             }
-            Log.d("ScannerScreen", "Authenticated sector $sector using ${keyA.joinToString("") { byte -> "%02X".format(byte) }}")
+            Log.d(
+                "ScannerScreen",
+                "Authenticated sector $sector using ${
+                    keyA.joinToString("") { byte ->
+                        "%02X".format(byte)
+                    }
+                }"
+            )
             for (block in 0 until mifare.getBlockCountInSector(sector)) {
                 val blockIndex = mifare.sectorToBlock(sector) + block
                 val blockData = mifare.readBlock(blockIndex)
-                val blockDataHex = blockData.joinToString(separator = "") { byte -> "%02X".format(byte) }
+                val blockDataHex =
+                    blockData.joinToString(separator = "") { byte -> "%02X".format(byte) }
                 Log.d("ScannerScreen", "Sector $sector Block $blockIndex Data: $blockDataHex")
             }
         }

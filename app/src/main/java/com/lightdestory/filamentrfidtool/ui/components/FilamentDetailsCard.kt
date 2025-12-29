@@ -36,10 +36,11 @@ fun FilamentDetailsCard(
 ) {
     val parsedColors = Array<Color?>(2) { null }
     if (spoolData.colorHex.contains('-')) {
-        parsedColors[0] = runCatching { Color(spoolData.colorHex.split('-')[0].toColorInt()) }.getOrDefault(White)
-        parsedColors[1] = runCatching { Color(spoolData.colorHex.split('-')[1].toColorInt()) }.getOrNull()
-    }
-    else {
+        parsedColors[0] =
+            runCatching { Color(spoolData.colorHex.split('-')[0].toColorInt()) }.getOrDefault(White)
+        parsedColors[1] =
+            runCatching { Color(spoolData.colorHex.split('-')[1].toColorInt()) }.getOrNull()
+    } else {
         parsedColors[0] = runCatching { Color(spoolData.colorHex.toColorInt()) }.getOrDefault(White)
     }
     Card(
@@ -59,13 +60,34 @@ fun FilamentDetailsCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
-            DetailItemCard(label = stringResource(R.string.scanner_filament_uid), value = spoolData.uid)
-            DetailItemCard(label = stringResource(R.string.scanner_filament_manufacturer), value = spoolData.manufacturer)
-            DetailItemCard(label = stringResource(R.string.scanner_filament_material), value = spoolData.material)
-            DetailItemCard(label = stringResource(R.string.scanner_filament_color_name), value = "${spoolData.colorName} (${spoolData.colorHex})")
-            DetailItemCard(label = stringResource(id = R.string.scanner_filament_weight), value = "${spoolData.weightGrams} g")
-            DetailItemCard(label = stringResource(R.string.scanner_filament_diameter), value = "${spoolData.diameterMm} mm")
-            DetailItemCard(label = stringResource(R.string.scanner_filament_production_date), value = spoolData.productionDate)
+            DetailItemCard(
+                label = stringResource(R.string.scanner_filament_uid),
+                value = spoolData.uid
+            )
+            DetailItemCard(
+                label = stringResource(R.string.scanner_filament_manufacturer),
+                value = spoolData.manufacturer
+            )
+            DetailItemCard(
+                label = stringResource(R.string.scanner_filament_material),
+                value = spoolData.material
+            )
+            DetailItemCard(
+                label = stringResource(R.string.scanner_filament_color_name),
+                value = "${spoolData.colorName} (${spoolData.colorHex})"
+            )
+            DetailItemCard(
+                label = stringResource(id = R.string.scanner_filament_weight),
+                value = "${spoolData.weightGrams} g"
+            )
+            DetailItemCard(
+                label = stringResource(R.string.scanner_filament_diameter),
+                value = "${spoolData.diameterMm} mm"
+            )
+            DetailItemCard(
+                label = stringResource(R.string.scanner_filament_production_date),
+                value = spoolData.productionDate
+            )
             ColorItemCard(colors = parsedColors)
         }
     }
@@ -86,7 +108,11 @@ private fun DetailItemCard(label: String, value: String) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(text = label, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(modifier = Modifier.weight(1f))
             Text(text = value, style = MaterialTheme.typography.bodyMedium)
         }
@@ -108,7 +134,11 @@ private fun ColorItemCard(colors: Array<Color?>) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(text = stringResource(R.string.scanner_filament_color), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            Text(
+                text = stringResource(R.string.scanner_filament_color),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = if (colors[1] != null) {

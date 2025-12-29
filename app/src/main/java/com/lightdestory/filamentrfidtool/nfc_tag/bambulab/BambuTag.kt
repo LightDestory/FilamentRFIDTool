@@ -1,13 +1,14 @@
 package com.lightdestory.filamentrfidtool.nfc_tag.bambulab
+
 import android.util.Log
 import com.lightdestory.filamentrfidtool.models.FilamentSpool
 import com.lightdestory.filamentrfidtool.nfc_tag.TagImplementation
+import org.bouncycastle.crypto.digests.SHA256Digest
 import org.bouncycastle.crypto.generators.HKDFBytesGenerator
 import org.bouncycastle.crypto.params.HKDFParameters
-import org.bouncycastle.crypto.digests.SHA256Digest
 
 
-object BambuTag : TagImplementation{
+object BambuTag : TagImplementation {
 
     private val MASTER_KEY = byteArrayOf(
         0x9a.toByte(), 0x75.toByte(), 0x9c.toByte(), 0xf2.toByte(),
@@ -41,7 +42,10 @@ object BambuTag : TagImplementation{
             val start = i * 6
             val key = derivedBuffer.copyOfRange(start, start + 6) // Extract a 6-byte key
             keys.add(key) // Add the key to the list
-            Log.d("BambuTag", "Derived Key A for sector $i: ${key.joinToString("") { "%02X".format(it) }}")
+            Log.d(
+                "BambuTag",
+                "Derived Key A for sector $i: ${key.joinToString("") { "%02X".format(it) }}"
+            )
         }
         return keys
     }

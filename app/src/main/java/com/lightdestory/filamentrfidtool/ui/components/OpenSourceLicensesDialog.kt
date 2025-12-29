@@ -101,6 +101,8 @@ private fun OpenSourceLicensesDialogPreview() {
     )
     val showDialog = remember { mutableStateOf(true) }
     if (showDialog.value) {
-        OpenSourceLicensesDialog(licenses = sampleLicenses, onDismiss = { showDialog.value = false })
+        OpenSourceLicensesDialog(
+            licenses = sampleLicenses,
+            onDismiss = { showDialog.value = false })
     }
 }

@@ -25,9 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lightdestory.filamentrfidtool.R
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun InfoCard(
@@ -70,7 +70,7 @@ fun InfoCard(
             }
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_large)))
             Column(
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(id=R.dimen.spacing_xs)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.spacing_xs)),
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier.weight(1f)
             ) {
