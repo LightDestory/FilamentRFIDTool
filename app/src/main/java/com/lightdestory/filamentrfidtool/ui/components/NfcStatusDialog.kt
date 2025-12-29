@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.DialogProperties
 import com.lightdestory.filamentrfidtool.R
 import com.lightdestory.filamentrfidtool.utils.NfcStatus
 
@@ -23,6 +24,7 @@ fun NfcStatusDialog(
         NfcStatus.Enabled -> Unit
         NfcStatus.Disabled -> AlertDialog(
             onDismissRequest = { /* Keep dialog open until NFC is on */ },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
             title = {
                 Text(
                     text = stringResource(R.string.nfc_disabled_title),
@@ -51,6 +53,7 @@ fun NfcStatusDialog(
 
         NfcStatus.NoHardware -> AlertDialog(
             onDismissRequest = { /* Prevent dismiss; app incompatible without NFC */ },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
             title = {
                 Text(
                     text = stringResource(R.string.nfc_no_hardware_title),
