@@ -1,9 +1,8 @@
 package com.lightdestory.filamentrfidtool
 
+import android.content.BroadcastReceiver
 import android.content.Intent
-import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,12 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -37,10 +34,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.lightdestory.filamentrfidtool.ui.components.NfcStatusDialog
 import com.lightdestory.filamentrfidtool.ui.theme.FilamentRFIDToolTheme
 import com.lightdestory.filamentrfidtool.ui.views.about.AboutScreen
 import com.lightdestory.filamentrfidtool.ui.views.scanner.ScannerScreen
 import com.lightdestory.filamentrfidtool.ui.views.vault.VaultScreen
+import com.lightdestory.filamentrfidtool.utils.openNfcSettings
+import com.lightdestory.filamentrfidtool.utils.registerNfcStateReceiver
+import com.lightdestory.filamentrfidtool.utils.resolveNfcStatus
 
 class MainActivity : ComponentActivity() {
     private val latestNfcIntent = mutableStateOf<Intent?>(null)
@@ -68,74 +69,71 @@ private enum class BottomDestination(val route: String, val labelRes: Int) {
     About("about", R.string.navigation_about)
 }
 
-private enum class NfcStatus {
-    Enabled,
-    Disabled,
-    NoHardware
-}
-
 @Composable
 private fun MainScaffold(
-        latestNfcIntent: androidx.compose.runtime.State<Intent?> = remember {
-            mutableStateOf(null)
-        }
+    latestNfcIntent: androidx.compose.runtime.State<Intent?> = remember {
+        mutableStateOf(null)
+    }
 ) {
+    val context = LocalContext.current
     val navController = rememberNavController()
     val items = listOf(BottomDestination.Scanner, BottomDestination.Vault, BottomDestination.About)
 
     Scaffold(
-            bottomBar = {
-                NavigationBar {
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentDestination = navBackStackEntry?.destination
-                    items.forEach { destination ->
-                        NavigationBarItem(
-                                selected =
-                                        currentDestination?.hierarchy?.any {
-                                            it.route == destination.route
-                                        } == true,
-                                onClick = {
-                                    navController.navigate(destination.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                },
-                                label = { Text(stringResource(destination.labelRes)) },
-                                icon = {
-                                    when (destination) {
-                                        BottomDestination.Scanner ->
-                                                androidx.compose.material3.Icon(
-                                                        imageVector = Icons.Default.Nfc,
-                                                        contentDescription =
-                                                                stringResource(destination.labelRes)
-                                                )
-                                        BottomDestination.Vault ->
-                                                androidx.compose.material3.Icon(
-                                                        imageVector = Icons.Default.Storage,
-                                                        contentDescription =
-                                                                stringResource(destination.labelRes)
-                                                )
-                                        BottomDestination.About ->
-                                                androidx.compose.material3.Icon(
-                                                        imageVector = Icons.Default.Info,
-                                                        contentDescription =
-                                                                stringResource(destination.labelRes)
-                                                )
-                                    }
+        bottomBar = {
+            NavigationBar {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                items.forEach { destination ->
+                    NavigationBarItem(
+                        selected =
+                            currentDestination?.hierarchy?.any {
+                                it.route == destination.route
+                            } == true,
+                        onClick = {
+                            navController.navigate(destination.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
                                 }
-                        )
-                    }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        label = { Text(stringResource(destination.labelRes)) },
+                        icon = {
+                            when (destination) {
+                                BottomDestination.Scanner ->
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.Default.Nfc,
+                                        contentDescription =
+                                            stringResource(destination.labelRes)
+                                    )
+
+                                BottomDestination.Vault ->
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.Default.Storage,
+                                        contentDescription =
+                                            stringResource(destination.labelRes)
+                                    )
+
+                                BottomDestination.About ->
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription =
+                                            stringResource(destination.labelRes)
+                                    )
+                            }
+                        }
+                    )
                 }
             }
+        }
     ) { innerPadding ->
-        NfcPrompt()
+        NfcPrompt(onOpenSettings = { openNfcSettings(context) })
         NavHost(
-                navController = navController,
-                startDestination = BottomDestination.Scanner.route,
-                modifier = Modifier.padding(innerPadding)
+            navController = navController,
+            startDestination = BottomDestination.Scanner.route,
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomDestination.Scanner.route) { ScannerScreen(latestNfcIntent) }
             composable(BottomDestination.Vault.route) { VaultScreen() }
@@ -145,54 +143,38 @@ private fun MainScaffold(
 }
 
 @Composable
-private fun NfcPrompt() {
+private fun NfcPrompt(onOpenSettings: () -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var nfcStatus by remember { mutableStateOf(resolveNfcStatus(context)) }
+    var stateReceiver by remember { mutableStateOf<BroadcastReceiver?>(null) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 nfcStatus = resolveNfcStatus(context)
             }
+            if (event == Lifecycle.Event.ON_RESUME && stateReceiver == null) {
+                stateReceiver = registerNfcStateReceiver(context) { status -> nfcStatus = status }
+            }
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                stateReceiver?.let { context.unregisterReceiver(it) }
+                stateReceiver = null
+            }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            stateReceiver?.let { context.unregisterReceiver(it) }
+            stateReceiver = null
+        }
     }
 
-    if (nfcStatus == NfcStatus.Disabled) {
-        AlertDialog(
-                onDismissRequest = { /* Dialog intentionally not dismissible while NFC is off */},
-                title = { Text(text = stringResource(R.string.nfc_disabled_title)) },
-                text = { Text(text = stringResource(R.string.nfc_disabled_message)) },
-                confirmButton = {
-                    TextButton(onClick = { openNfcSettings(context) }) {
-                        Text(text = stringResource(R.string.nfc_enable_action))
-                    }
-                }
-        )
-    }
-}
-
-private fun resolveNfcStatus(context: android.content.Context): NfcStatus {
-    val adapter = runCatching { NfcAdapter.getDefaultAdapter(context) }.getOrNull()
-    return when {
-        adapter == null -> NfcStatus.NoHardware
-        adapter.isEnabled -> NfcStatus.Enabled
-        else -> NfcStatus.Disabled
-    }
-}
-
-private fun openNfcSettings(context: android.content.Context) {
-    val settingsIntent =
-            Intent(Settings.ACTION_NFC_SETTINGS).takeIf {
-                context.packageManager.resolveActivity(it, 0) != null
-            }
-                    ?: Intent(Settings.ACTION_WIRELESS_SETTINGS)
-
-    settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(settingsIntent)
+    NfcStatusDialog(
+        status = nfcStatus,
+        onOpenSettings = onOpenSettings
+    )
 }
 
 @Preview(showBackground = true)

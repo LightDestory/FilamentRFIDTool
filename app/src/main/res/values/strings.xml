@@ -57,5 +57,7 @@
     <string name="nfc_disabled_message">This app requires NFC to work. Turn it on in system settings.</string>
     <string name="nfc_enable_action">Open NFC settings</string>
     <string name="invalid_mifareclassic_tag">Invalid MifareClassic tag</string>
+    <string name="nfc_no_hardware_title">NFC hardware not found</string>
+    <string name="nfc_no_hardware_message">The app is not compatible without NFC hardware.</string>
 
 </resources>
