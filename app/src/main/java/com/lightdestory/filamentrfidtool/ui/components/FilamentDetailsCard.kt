@@ -1,6 +1,7 @@
 package com.lightdestory.filamentrfidtool.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -147,10 +148,12 @@ private fun ColorItemCard(colors: Array<Color?>) {
                             brush = Brush.linearGradient(listOf(colors[0]!!, colors[1]!!)),
                             shape = CircleShape
                         )
+                        .border(2.dp, Color.Black, shape = CircleShape)
                 } else {
                     Modifier
                         .size(48.dp)
                         .background(color = colors[0]!!, shape = CircleShape)
+                        .border(2.dp, Color.Black, shape = CircleShape)
                 }
             )
         }
