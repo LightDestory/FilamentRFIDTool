@@ -77,12 +77,8 @@ fun FilamentDetailsCard(
                 value = "${spoolData.colorName} (${spoolData.colorHex})"
             )
             DetailItemCard(
-                label = stringResource(id = R.string.scanner_filament_weight),
-                value = "${spoolData.weightGrams} g"
-            )
-            DetailItemCard(
-                label = stringResource(R.string.scanner_filament_diameter),
-                value = "${spoolData.diameterMm} mm"
+                label = stringResource(id = R.string.scanner_filament_spool),
+                value = "${spoolData.weightGrams} g - ${spoolData.diameterMm} mm"
             )
             DetailItemCard(
                 label = stringResource(R.string.scanner_filament_production_date),

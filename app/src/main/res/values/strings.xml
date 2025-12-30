@@ -43,8 +43,7 @@
     <string name="scanner_filament_details">Filament details</string>
     <string name="scanner_filament_manufacturer">Manufacturer</string>
     <string name="scanner_filament_material">Material</string>>
-    <string name="scanner_filament_diameter">Diameter</string>
-    <string name="scanner_filament_weight">Weight</string>
+    <string name="scanner_filament_spool">Spool</string>
     <string name="scanner_filament_color_name">Color</string>
     <string name="scanner_filament_color_hex">Color HEX</string>
     <string name="scanner_filament_uid">UID</string>
