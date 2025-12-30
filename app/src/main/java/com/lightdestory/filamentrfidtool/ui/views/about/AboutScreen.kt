@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -100,6 +104,7 @@ fun AboutScreen(
                 description = stringResource(R.string.about_github_description),
                 iconRes = R.drawable.github_icon,
                 onClick = { uriHandler.openUri(githubUrl) },
+                onClickIcon = Icons.AutoMirrored.Default.OpenInNew,
                 modifier = Modifier.fillMaxWidth()
             )
             InfoCard(
@@ -107,6 +112,7 @@ fun AboutScreen(
                 description = stringResource(R.string.about_rfid_description),
                 iconRes = R.drawable.rfid_research_icon,
                 onClick = { uriHandler.openUri(rfidUrl) },
+                onClickIcon = Icons.AutoMirrored.Default.OpenInNew,
                 modifier = Modifier.fillMaxWidth()
             )
             InfoCard(
@@ -114,6 +120,7 @@ fun AboutScreen(
                 description = stringResource(R.string.about_kofi_description),
                 iconRes = R.drawable.kofi_icon,
                 onClick = { uriHandler.openUri(kofiUrl) },
+                onClickIcon = Icons.AutoMirrored.Default.OpenInNew,
                 modifier = Modifier.fillMaxWidth()
             )
             InfoCard(
@@ -121,6 +128,7 @@ fun AboutScreen(
                 description = stringResource(R.string.about_licenses_description),
                 iconRes = R.drawable.license_icon,
                 onClick = { showLicenses.value = true },
+                onClickIcon = Icons.Default.ChevronRight,
                 modifier = Modifier.fillMaxWidth()
             )
         }

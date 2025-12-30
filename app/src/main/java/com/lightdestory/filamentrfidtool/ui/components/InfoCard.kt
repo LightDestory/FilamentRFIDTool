@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,6 +36,7 @@ fun InfoCard(
     description: String,
     iconRes: Int,
     onClick: () -> Unit,
+    onClickIcon: ImageVector,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -85,7 +87,7 @@ fun InfoCard(
             }
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_small)))
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = onClickIcon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -101,6 +103,7 @@ private fun InfoCardPreview() {
         description = "Sample description for preview purposes.",
         iconRes = R.drawable.ic_launcher_foreground,
         onClick = {},
+        onClickIcon = Icons.Default.ChevronRight,
         modifier = Modifier.padding(16.dp)
     )
 }
