@@ -98,6 +98,7 @@ fun AboutScreen(
             verticalArrangement =
                 Arrangement.spacedBy(dimensionResource(id = R.dimen.spacing_large)),
             modifier = Modifier.fillMaxWidth()
+                .padding(dimensionResource(R.dimen.spacing_none), dimensionResource(R.dimen.spacing_none), dimensionResource(R.dimen.spacing_none), dimensionResource(id = R.dimen.spacing_xl))
         ) {
             InfoCard(
                 title = stringResource(R.string.about_update_check),
