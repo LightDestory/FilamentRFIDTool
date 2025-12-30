@@ -61,7 +61,7 @@
 
     <!-- Update checker -->
     <string name="about_update_check">Check for updates</string>
-    <string name="about_update_check_description">Check if a new version is available.</string>
+    <string name="about_update_check_description">Look for new updates for the application.</string>
     <string name="about_update_uptodate">You are on the latest version</string>
     <string name="about_update_available">Update available</string>
     <string name="about_update_open_release">Open release</string>

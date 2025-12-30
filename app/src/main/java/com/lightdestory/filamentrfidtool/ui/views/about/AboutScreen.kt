@@ -21,8 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -30,11 +32,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import android.widget.Toast
 import com.lightdestory.filamentrfidtool.BuildConfig
 import com.lightdestory.filamentrfidtool.R
 import com.lightdestory.filamentrfidtool.ui.components.InfoCard
 import com.lightdestory.filamentrfidtool.ui.components.OpenSourceLicensesDialog
+import com.lightdestory.filamentrfidtool.ui.components.UpdateAvailableDialog
 import com.lightdestory.filamentrfidtool.ui.theme.FilamentRFIDToolTheme
+import com.lightdestory.filamentrfidtool.utils.UpdateInfo
+import com.lightdestory.filamentrfidtool.utils.checkUpdate
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -48,6 +55,10 @@ fun AboutScreen(
     val githubUrl = stringResource(R.string.about_github_url)
     val kofiUrl = stringResource(R.string.about_kofi_url)
     val rfidUrl = stringResource(R.string.about_rfid_url)
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val updateInfo = remember { mutableStateOf<UpdateInfo?>(null) }
+
     Column(
         modifier =
             Modifier
@@ -104,7 +115,16 @@ fun AboutScreen(
                 title = stringResource(R.string.about_update_check),
                 description = stringResource(R.string.about_update_check_description),
                 iconRes = R.drawable.ic_launcher_foreground,
-                onClick = {  },
+                onClick = {
+                    coroutineScope.launch {
+                        val info = checkUpdate(context)
+                        when {
+                            info == null -> Toast.makeText(context, R.string.about_update_error, Toast.LENGTH_SHORT).show()
+                            info.isUpdateAvailable -> updateInfo.value = info
+                            else -> Toast.makeText(context, R.string.about_update_uptodate, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },
                 onClickIcon = Icons.Default.Update,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -148,6 +168,10 @@ fun AboutScreen(
             licenses = licenses,
             onDismiss = { showLicenses.value = false }
         )
+    }
+
+    updateInfo.value?.takeIf { it.isUpdateAvailable }?.let {
+        UpdateAvailableDialog(updateInfo = it) { updateInfo.value = null }
     }
 }
 

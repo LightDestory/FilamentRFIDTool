@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
@@ -36,10 +38,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.lightdestory.filamentrfidtool.ui.components.NfcStatusDialog
+import com.lightdestory.filamentrfidtool.ui.components.UpdateAvailableDialog
 import com.lightdestory.filamentrfidtool.ui.theme.FilamentRFIDToolTheme
 import com.lightdestory.filamentrfidtool.ui.views.about.AboutScreen
 import com.lightdestory.filamentrfidtool.ui.views.scanner.ScannerScreen
 import com.lightdestory.filamentrfidtool.ui.views.vault.VaultScreen
+import com.lightdestory.filamentrfidtool.utils.UpdateInfo
+import com.lightdestory.filamentrfidtool.utils.checkUpdate
 import com.lightdestory.filamentrfidtool.utils.openNfcSettings
 import com.lightdestory.filamentrfidtool.utils.registerNfcStateReceiver
 import com.lightdestory.filamentrfidtool.utils.resolveNfcStatus
@@ -81,6 +86,17 @@ private fun MainScaffold(
     val context = LocalContext.current
     val navController = rememberNavController()
     val items = listOf(BottomDestination.Scanner, BottomDestination.Vault, BottomDestination.About)
+    val updateInfo = remember { mutableStateOf<UpdateInfo?>(null) }
+    val isPreview = LocalInspectionMode.current
+
+    LaunchedEffect(Unit) {
+        if (!isPreview) {
+            val info = checkUpdate(context.applicationContext)
+            if (info?.isUpdateAvailable == true) {
+                updateInfo.value = info
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -144,6 +160,10 @@ private fun MainScaffold(
             composable(BottomDestination.Vault.route) { VaultScreen() }
             composable(BottomDestination.About.route) { AboutScreen() }
         }
+    }
+
+    updateInfo.value?.takeIf { it.isUpdateAvailable }?.let {
+        UpdateAvailableDialog(updateInfo = it) { updateInfo.value = null }
     }
 }
 

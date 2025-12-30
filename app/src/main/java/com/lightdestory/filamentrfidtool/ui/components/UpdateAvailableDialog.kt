@@ -40,7 +40,7 @@ fun UpdateAvailableDialog(
             Text(
                 text = stringResource(
                     id = R.string.about_update_description,
-                    updateInfo.latestVersion ?: ""
+                    updateInfo.latestVersion
                 ),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
@@ -51,6 +51,7 @@ fun UpdateAvailableDialog(
             Button(
                 onClick = {
                     releaseUrl?.let(uriHandler::openUri)
+                    onDismiss()
                 },
                 enabled = releaseUrl != null,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -74,7 +75,7 @@ fun UpdateAvailableDialog(
 @Composable
 private fun UpdateAvailableDialogPreview() {
     UpdateAvailableDialog(
-        updateInfo = UpdateInfo(isUpdateAvailable = true, latestVersion = "0.0.0", releaseUrl = null),
+        updateInfo = UpdateInfo(isUpdateAvailable = true, latestVersion = "0.0.0", releaseUrl = "https://example.com"),
         onDismiss = {}
     )
 }

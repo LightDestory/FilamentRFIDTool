@@ -1,5 +1,6 @@
 package com.lightdestory.filamentrfidtool.utils
 
+import android.content.Context
 import com.lightdestory.filamentrfidtool.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,7 +15,8 @@ data class UpdateInfo(
     val releaseUrl: String?
 )
 
-suspend fun checkUpdate(): UpdateInfo? = withContext(Dispatchers.IO) {
+suspend fun checkUpdate(context: Context): UpdateInfo? = withContext(Dispatchers.IO) {
+    if (!isOnline(context)) return@withContext null
     val latest = fetchLatestFromReleases() ?: return@withContext null
     val newUpdateAvailable = BuildConfig.VERSION_NAME != latest.first
     UpdateInfo(isUpdateAvailable = newUpdateAvailable, latestVersion = latest.first, releaseUrl = latest.second)
