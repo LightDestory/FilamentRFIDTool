@@ -59,4 +59,12 @@
     <string name="nfc_no_hardware_title">NFC hardware not found</string>
     <string name="nfc_no_hardware_message">The app is not compatible without NFC hardware.</string>
 
+    <!-- Update checker -->
+    <string name="about_update_check">Check for updates</string>
+    <string name="about_update_check_description">Check if a new version is available.</string>
+    <string name="about_update_uptodate">You are on the latest version</string>
+    <string name="about_update_available">Update available</string>
+    <string name="about_update_open_release">Open release</string>
+    <string name="about_update_error">Could not check updates</string>
+    <string name="about_update_description">A new version %1$s is available.</string>
 </resources>

@@ -14,7 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -92,13 +92,21 @@ fun AboutScreen(
         }
 
         FlowRow(
-            maxItemsInEachRow = 2,
+            maxItemsInEachRow = 1,
             horizontalArrangement =
                 Arrangement.spacedBy(dimensionResource(id = R.dimen.spacing_large)),
             verticalArrangement =
                 Arrangement.spacedBy(dimensionResource(id = R.dimen.spacing_large)),
             modifier = Modifier.fillMaxWidth()
         ) {
+            InfoCard(
+                title = stringResource(R.string.about_update_check),
+                description = stringResource(R.string.about_update_check_description),
+                iconRes = R.drawable.ic_launcher_foreground,
+                onClick = {  },
+                onClickIcon = Icons.Default.Update,
+                modifier = Modifier.fillMaxWidth()
+            )
             InfoCard(
                 title = stringResource(R.string.about_github_label),
                 description = stringResource(R.string.about_github_description),
