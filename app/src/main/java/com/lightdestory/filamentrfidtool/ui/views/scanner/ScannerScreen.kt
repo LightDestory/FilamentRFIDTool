@@ -1,6 +1,7 @@
 package com.lightdestory.filamentrfidtool.ui.views.scanner
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
@@ -44,9 +45,14 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.lightdestory.filamentrfidtool.R
 import com.lightdestory.filamentrfidtool.models.FilamentSpool
-import com.lightdestory.filamentrfidtool.nfc_tag.bambulab.BambuTag
 import com.lightdestory.filamentrfidtool.ui.components.FilamentDetailsCard
 import com.lightdestory.filamentrfidtool.ui.components.ScanDialog
+import com.lightdestory.filamentrfidtool.utils.TagType.MifareClassic1K
+import com.lightdestory.filamentrfidtool.utils.TagType.Ntag213
+import com.lightdestory.filamentrfidtool.utils.TagType.Ntag215
+import com.lightdestory.filamentrfidtool.utils.TagType.Ntag216
+import com.lightdestory.filamentrfidtool.utils.TagType.Unsupported
+import com.lightdestory.filamentrfidtool.utils.isSupportedTag
 
 @Composable
 fun ScannerScreen(latestNfcIntent: State<Intent?>) {
@@ -164,64 +170,51 @@ private fun disableDispatch(adapter: NfcAdapter, activity: Activity) {
 
 private fun handleTagIntent(intent: Intent, context: android.content.Context, onDone: () -> Unit) {
     val tag: Tag? = intent.getParcelableTag()
-    if (tag == null) {
-        onDone()
-        return
-    }
-    val techList = tag.techList
-    val isMifareClassic = techList.contains(MifareClassic::class.java.name)
-    if (!isMifareClassic) {
-        Toast.makeText(
-            context,
-            context.getString(R.string.non_mifare_tag_detected), Toast.LENGTH_SHORT
-        ).show()
-        Log.w("ScannerScreen", "Non-Mifare tag detected: ${tag.techList?.joinToString()}")
-        onDone()
-        return
-    }
-    val mifare = MifareClassic.get(tag)
-    if (mifare == null) {
-        Log.w("ScannerScreen", "MifareClassic tech unavailable for detected tag")
-        Toast.makeText(
-            context,
-            context.getString(R.string.invalid_mifareclassic_tag), Toast.LENGTH_SHORT
-        ).show()
-        onDone()
-        return
-    }
-    val uidBytes = tag.id
-    val uidHex = uidBytes.joinToString(separator = "") { byte -> "%02X".format(byte) }
-    Log.i("ScannerScreen", "Detected MifareClassic tag UID=$uidHex")
-    val derivedKeys = BambuTag.deriveKeys(uidBytes, mifare.sectorCount)
-    runCatching {
-        mifare.connect()
-        for (sector in 0 until mifare.sectorCount) {
-            val keyA = derivedKeys.getOrNull(sector)
-            val authenticated = keyA != null && mifare.authenticateSectorWithKeyA(sector, keyA)
-            if (!authenticated) {
-                Log.w("ScannerScreen", "Authentication failed for sector $sector with derived keys")
-                continue
-            }
-            Log.d(
-                "ScannerScreen",
-                "Authenticated sector $sector using ${
-                    keyA.joinToString("") { byte ->
-                        "%02X".format(byte)
-                    }
-                }"
-            )
-            for (block in 0 until mifare.getBlockCountInSector(sector)) {
-                val blockIndex = mifare.sectorToBlock(sector) + block
-                val blockData = mifare.readBlock(blockIndex)
-                val blockDataHex =
-                    blockData.joinToString(separator = "") { byte -> "%02X".format(byte) }
-                Log.d("ScannerScreen", "Sector $sector Block $blockIndex Data: $blockDataHex")
-            }
+    val tagType = isSupportedTag(tag)
+    when (tagType) {
+        MifareClassic1K -> {
+            handleMifareClassic(context, onDone)
+            return
         }
-    }.onFailure { error ->
-        Log.e("ScannerScreen", "Failed to read MifareClassic tag", error)
-    }.also {
-        runCatching { mifare.close() }
+        Ntag213, Ntag215, Ntag216-> {
+            Toast.makeText(
+                context,
+                context.getString(R.string.not_yet_implemented), Toast.LENGTH_SHORT
+            ).show()
+            onDone()
+            return
+        }
+        Unsupported -> {
+            Toast.makeText(
+                context,
+                context.getString(R.string.no_compatible_tag_detected), Toast.LENGTH_SHORT
+            ).show()
+            Log.w("ScannerScreen", "Unsupported tag detected: ${tag?.techList?.joinToString()}")
+            onDone()
+            return
+        }
+    }
+}
+
+private fun handleMifareClassic(context: android.content.Context, onDone: () -> Unit) {
+    // Show a simple dialog indicating this feature is not yet implemented.
+    Log.i("ScannerScreen", "Mifare Classic tag detected. Showing not-implemented dialog.")
+    try {
+        AlertDialog.Builder(context)
+            .setTitle(null)
+            .setMessage(context.getString(R.string.not_yet_implemented))
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+                onDone()
+            }
+            .setOnCancelListener {
+                onDone()
+            }
+            .show()
+    } catch (e: Exception) {
+        // fallback: toast + call onDone
+        Log.w("ScannerScreen", "Failed to show dialog, falling back to Toast", e)
+        Toast.makeText(context, context.getString(R.string.not_yet_implemented), Toast.LENGTH_SHORT).show()
         onDone()
     }
 }

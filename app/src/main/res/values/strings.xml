@@ -49,7 +49,7 @@
     <string name="scanner_filament_uid">UID</string>
     <string name="scanner_filament_color">Color Swatch</string>
     <string name="scanner_filament_production_date">Production Date</string>
-    <string name="non_mifare_tag_detected">Non-Mifare tag detected</string>
+    <string name="no_compatible_tag_detected">No compatible tag detected</string>
 
     <!-- NFC status prompts -->
     <string name="nfc_disabled_title">NFC is off</string>

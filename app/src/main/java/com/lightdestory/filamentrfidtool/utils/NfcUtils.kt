@@ -6,12 +6,26 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
+import android.nfc.Tag
+import android.nfc.tech.MifareClassic
+import android.nfc.tech.Ndef
+import android.nfc.tech.NdefFormatable
+import android.nfc.tech.NfcA
 import android.provider.Settings
+import android.util.Log
 
 enum class NfcStatus {
     Enabled,
     Disabled,
     NoHardware
+}
+
+enum class TagType {
+    MifareClassic1K,
+    Ntag213,
+    Ntag215,
+    Ntag216,
+    Unsupported
 }
 
 fun resolveNfcStatus(context: Context): NfcStatus {
@@ -56,3 +70,23 @@ fun registerNfcStateReceiver(
     return runCatching { context.registerReceiver(receiver, filter) }.getOrNull()?.let { receiver }
 }
 
+fun isSupportedTag(tag: Tag?): TagType {
+    if (tag == null) return TagType.Unsupported
+    val techs = tag.techList
+    val hasMifareClassic = techs.contains(MifareClassic::class.java.name)
+    if (hasMifareClassic) {
+        val mc = MifareClassic.get(tag)
+        return if (mc?.type == MifareClassic.TYPE_CLASSIC && mc.size == MifareClassic.SIZE_1K) TagType.MifareClassic1K else TagType.Unsupported
+    }
+    val hasNfcA = techs.contains(NfcA::class.java.name)
+    if (!hasNfcA) return TagType.Unsupported
+    val ndef = Ndef.get(tag)
+    // NTAG213/215/216 use NfcA with NDEF; check maxSize as a practical filter
+    val ndefSize = ndef?.maxSize ?: NdefFormatable.get(tag)?.let { 0 } ?: -1
+    return when (ndefSize) {
+        144 -> TagType.Ntag213
+        504 -> TagType.Ntag215
+        888 -> TagType.Ntag216
+        else -> TagType.Unsupported
+    }
+}
