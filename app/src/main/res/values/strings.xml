@@ -67,4 +67,6 @@
     <string name="about_update_open_release">Open release</string>
     <string name="about_update_error">Could not check updates</string>
     <string name="about_update_description">A new version %1$s is available.</string>
+    <string name="scanner_tag_read_success">RFID read successfully</string>
+    <string name="scanner_tag_read_failure">Unable to parse RFID</string>
 </resources>

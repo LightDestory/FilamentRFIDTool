@@ -1,7 +1,7 @@
 package com.lightdestory.filamentrfidtool.ui.views.scanner
 
 import android.app.Activity
-import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
@@ -45,6 +45,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.lightdestory.filamentrfidtool.R
 import com.lightdestory.filamentrfidtool.models.FilamentSpool
+import com.lightdestory.filamentrfidtool.nfc_tag.bambulab.BambuTag
 import com.lightdestory.filamentrfidtool.ui.components.FilamentDetailsCard
 import com.lightdestory.filamentrfidtool.ui.components.ScanDialog
 import com.lightdestory.filamentrfidtool.utils.TagType.MifareClassic1K
@@ -63,6 +64,7 @@ fun ScannerScreen(latestNfcIntent: State<Intent?>) {
     val isScanning = remember { mutableStateOf(false) }
     val lastProcessedIntent = remember { mutableStateOf<Intent?>(null) }
     val currentIsScanning by rememberUpdatedState(isScanning.value)
+    val filamentDetails = remember { mutableStateOf(FilamentSpool()) }
 
     DisposableEffect(lifecycleOwner, nfcAdapter) {
         if (nfcAdapter == null || activity == null) return@DisposableEffect onDispose { }
@@ -90,7 +92,12 @@ fun ScannerScreen(latestNfcIntent: State<Intent?>) {
         val intent = latestNfcIntent.value
         if (intent == null || intent == lastProcessedIntent.value) return@LaunchedEffect
         if (intent.action == NfcAdapter.ACTION_TAG_DISCOVERED || intent.action == NfcAdapter.ACTION_TECH_DISCOVERED) {
-            handleTagIntent(intent, context, onDone = { isScanning.value = false })
+            handleTagIntent(
+                intent,
+                context,
+                onDone = { isScanning.value = false },
+                onSuccess = { filamentDetails.value = it }
+            )
             lastProcessedIntent.value = intent
         }
     }
@@ -107,7 +114,7 @@ fun ScannerScreen(latestNfcIntent: State<Intent?>) {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 FilamentDetailsCard(
-                    FilamentSpool()
+                    filamentDetails.value
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -168,12 +175,18 @@ private fun disableDispatch(adapter: NfcAdapter, activity: Activity) {
     runCatching { adapter.disableForegroundDispatch(activity) }
 }
 
-private fun handleTagIntent(intent: Intent, context: android.content.Context, onDone: () -> Unit) {
+private fun handleTagIntent(
+    intent: Intent,
+    context: android.content.Context,
+    onDone: () -> Unit,
+    onSuccess: (FilamentSpool) -> Unit = {}
+) {
     val tag: Tag? = intent.getParcelableTag()
     val tagType = isSupportedTag(tag)
     when (tagType) {
         MifareClassic1K -> {
-            handleMifareClassic(context, onDone)
+            handleMifareClassic(tag!!, context, onSuccess)
+            onDone()
             return
         }
         Ntag213, Ntag215, Ntag216-> {
@@ -196,27 +209,41 @@ private fun handleTagIntent(intent: Intent, context: android.content.Context, on
     }
 }
 
-private fun handleMifareClassic(context: android.content.Context, onDone: () -> Unit) {
-    // Show a simple dialog indicating this feature is not yet implemented.
-    Log.i("ScannerScreen", "Mifare Classic tag detected. Showing not-implemented dialog.")
-    try {
-        AlertDialog.Builder(context)
-            .setTitle(null)
-            .setMessage(context.getString(R.string.not_yet_implemented))
-            .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                dialog.dismiss()
-                onDone()
-            }
-            .setOnCancelListener {
-                onDone()
-            }
-            .show()
-    } catch (e: Exception) {
-        // fallback: toast + call onDone
-        Log.w("ScannerScreen", "Failed to show dialog, falling back to Toast", e)
-        Toast.makeText(context, context.getString(R.string.not_yet_implemented), Toast.LENGTH_SHORT).show()
-        onDone()
+private fun handleMifareClassic(
+    tag: Tag,
+    context: Context,
+    onSuccess: (FilamentSpool) -> Unit = {}
+) {
+    val mifare = MifareClassic.get(tag)
+    if (mifare == null) {
+        Log.w("ScannerScreen", "MifareClassic tech unavailable for detected tag")
+        Toast.makeText(
+            context,
+            context.getString(R.string.no_compatible_tag_detected),
+            Toast.LENGTH_SHORT
+        ).show()
+        return
     }
+    val data = BambuTag.getSpoolData(tag)
+    if (data != null) {
+        Toast.makeText(
+            context,
+            context.getString(R.string.scanner_tag_read_success),
+            Toast.LENGTH_SHORT
+        ).show()
+        // Update UI with read data
+        onSuccess(data)
+        Log.i("ScannerScreen", "Successfully read filament data: $data")
+
+    } else {
+        Toast.makeText(
+            context,
+            context.getString(R.string.scanner_tag_read_failure),
+            Toast.LENGTH_SHORT
+        ).show()
+        Log.w("ScannerScreen", "Failed to read filament data from tag")
+    }
+
 }
 
 private fun Intent.getParcelableTag(): Tag? {
