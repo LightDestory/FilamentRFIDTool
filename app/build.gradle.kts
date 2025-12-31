@@ -16,8 +16,20 @@ android {
         targetSdk = 36
         versionCode = 2
         versionName = "0.2"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters += setOf("armeabi-v7a", "arm64-v8a")
+        }
+    }
+
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val outputFileName = "FilamentRFIDTool-${variant.baseName}-${variant.versionName}.apk"
+                output.outputFileName = outputFileName
+            }
     }
 
     buildTypes {
